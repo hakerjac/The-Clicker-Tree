@@ -98,5 +98,5 @@ addLayer("b1", {
     hotkeys: [
         {key: "1", description: "1: Reset for first pts", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return hasUpgrsde("c",23)},
+    layerShown(){return hasUpgrade("c",23)},
 })
