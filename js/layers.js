@@ -49,7 +49,26 @@ addLayer("c", {
                 return player.points.add(1).pow(0.3)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        21:{
+            title: "$sudo heck game",
+            description: "Change the language to Chinese.",
+            cost: new Decimal(100)
+        },
+        22:{
+            title: "最后一个加成",
+            description: "******",
+            cost: new Decimal(100),
+            effect(){
+                return player[this.layer].points.add(1)
             },
+            effectDisplay(){ return format(upgradeEffect(this.layer,this.id) + "x")}
+        },
+        23:{
+            title: "结束新手教程",
+            description: "新层级!!!",
+            cost: new Decimal(10000)
+        }
         }
     }
 )
