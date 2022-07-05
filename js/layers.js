@@ -67,7 +67,7 @@ addLayer("c", {
         23:{
             title: "结束新手教程",
             description: "新层级!!!",
-            cost: new Decimal(10000)
+            cost: new Decimal(1e12500000)
         }
         }
     }
