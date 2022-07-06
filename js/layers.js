@@ -62,7 +62,7 @@ addLayer("c", {
             effect(){
                 return player[this.layer].points.add(1).pow(0.5)
             },
-            effectDisplay(){ return format(upgradeEffect(this.layer,this.id) + "x")}
+            effectDisplay(){ return format(upgradeEffect(this.layer,this.id))+ "x" }
         },
         23:{
             title: "结束新手教程",
@@ -81,10 +81,10 @@ addLayer("b1", {
 		points: new Decimal(0),
     }},
     color: "#FF0000",
-    requires: new Decimal(1), // Can be a function that takes requirement increases into account
+    requires: new Decimal(100000), // Can be a function that takes requirement increases into account
     resource: "first points", // Name of prestige currency
-    baseResource: "clickers", // Name of resource prestige is based on
-    baseAmount() {return player.c.points}, // Get the current amount of baseResource
+    baseResource:"points", // Name of resource prestige is based on
+    baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
     gainMult() {
@@ -99,4 +99,19 @@ addLayer("b1", {
         {key: "1", description: "1: Reset for first pts", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return hasUpgrade("c",23)||player.b1.points>=1},
+    upgrades:{
+        11:{
+            title:"加成.",
+            description:"懒得写简介的作者是屑（",
+            cost:new Decimal(2),
+        },
+        12:{
+            title:"brrrrrr",
+            description:"解锁挑战！！！",
+            cost:new Decimal(10),
+        }
+    },
+    Challenges:{
+        
+    }
 })
