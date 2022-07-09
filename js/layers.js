@@ -15,7 +15,8 @@ addLayer("c", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() {
         let mult = new Decimal(1)
-        if (hasUpgrade('c', 13)) mult = mult.times(upgradeEffect('c', 13))
+        if(hasUpgrade('c', 13))mult = mult.times(upgradeEffect('c', 13))
+        if(hasAchievement('a',11))mult = mult.times(1.1)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -94,6 +95,7 @@ addLayer("b1", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() {
         let mult = new Decimal(1)
+        if(hasMilestone(this.layer,0))mult = mult.times(10)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -140,11 +142,21 @@ addLayer("b1", {
             canComplete:function(){return player.points.gte(1000)}
         }
     },
+    milestones: {
+        0:{
+            requirementDescription: "世纪1：base1的映射",
+            effectDescription: "1st pts获取x10",
+            done() { return player.b1.points.gte(10) },
+            style(){}
+        }
+    
+    },
     tabFormat:{
         base1主界面:{
             unlocked(){return true},
             content:[
-            ["display-text",function(){return "<br><br>"}],
+            ["display-text",function(){return "<br>You have " + format(player.b1.points) + " first points<br><hr><br>"}
+        ,{ "color": "red", "font-size": "20px", "font-family": "Comic Sans MS" }],
             "prestige-button",
             "blank",
             ["row",[['upgrade',11],['upgrade',12],['upgrade',13],['upgrade',14]]],
@@ -154,7 +166,53 @@ addLayer("b1", {
             ]
         },
         世纪1:{
-            unlocked(){return hasUpgrade("b1",14)}
-        }
+            unlocked(){return hasUpgrade("b1",14)},
+            content:[
+            "blank",
+            ["milestone",0],
+            ]
+        },
     }
+})
+addLayer("a", {
+    name: "", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "Ac", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: true,
+		points: new Decimal(0),
+        achievement: new Decimal(0)
+    }},
+    color: "#FFF143",
+    requires: new Decimal(10), // Can be a function that takes requirement increases into account
+    resource: "achievements", // Name of prestige currency
+    baseResource: "clicker scores", // Name of resource prestige is based on
+    baseAmount() {return player.points}, // Get the current amount of baseResource
+    type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 0.5, // Prestige currency exponent
+    gainMult() {
+        let mult = new Decimal(1)
+        if(hasAchievement("a",11))player.a.achievement = 1
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 'side', // Row the layer is in on the tree (0 is the first row)
+    layerShown(){return true},
+    achievements:{
+        11:{
+            unlocked(){ return true },
+            name:"Clicker",
+            tooltip:"需求:1 clickers<br>加成:clicker获取x1.1",
+            done(){ return player.c.points.gte(1)},
+            
+        }
+    },
+    tabFormat:[
+        ["display-text",function(){ return 'You have ' + format(player.a.achievement) + " achievements"}],
+        "blank",
+        "blank",
+        ['achievement',11],
+    ]
 })
