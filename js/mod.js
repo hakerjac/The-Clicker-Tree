@@ -30,7 +30,9 @@ let changelog = `<h1>Changelog:</h1><br><br>
 	<h3>v0.2.1</h3><br>
 		- 增加关于Clicker层级的成就(4个)<br><br>
 	<h3>v0.2.2</h3><br>
-		- 增加关于First Point层级的成就(共10个)<br><br>`
+		- 增加关于First Point层级的成就(共10个)<br><br>
+	<h3>v0.2.3</h3><br>
+		- 增加mp<br><br>`
 let winText = `恭喜你！但是你玩这个树纯粹是在浪费时间（<br>因为我做得很垃圾<br>但是谢谢支持！`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -55,6 +57,7 @@ function getPointGen() {
 	if(hasUpgrade("c",11))gain = gain.times(2)
 	if(hasUpgrade("c",12))gain = gain.times(upgradeEffect("c",12))
 	if(hasUpgrade("c",22))gain = gain.times(upgradeEffect("c",22))
+	if(hasUpgrade("c",14)&&inChallenge("b1",11))gain = gain.times(1000)
 	if(hasUpgrade("b1",11))gain = gain.times(upgradeEffect("c",22))
 	if(inChallenge("b1",11))gain = gain.pow(0.5)
 	if(hasChallenge("b1",11))gain = gain.pow(1.1)

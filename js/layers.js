@@ -16,6 +16,7 @@ addLayer("c", {
     gainMult() {
         let mult = new Decimal(1)
         if(hasUpgrade('c', 13))mult = mult.times(upgradeEffect('c', 13))
+        if(hasUpgrade("c",14)&&hasChallenge("b1",11))mult = mult.times(10)
         if(hasAchievement('a',11))mult = mult.times(1.1)
         if(hasMilestone("b1",3))mult = mult.times(10)
         return mult
@@ -54,6 +55,12 @@ addLayer("c", {
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
+        14:{
+            unlocked(){return hasUpgrade(this.layer,13)&&(inChallenge("b1",11)||hasChallenge("b1",11))},
+            title:"A big BOOST in challenge",
+            description:"ERROR",
+            cost:new Decimal(0),
+        },
         21:{
             unlocked(){return hasUpgrade(this.layer,13)},
             title: "$sudo heck game",
@@ -86,6 +93,8 @@ addLayer("b1", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        mp: new Decimal(0),
+        mpgain: new Decimal(0)
     }},
     color: "#FF0000",
     requires: new Decimal(100), // Can be a function that takes requirement increases into account
@@ -101,6 +110,9 @@ addLayer("b1", {
         if(hasMilestone(this.layer,0))mult = mult.times(10)
         if(hasMilestone(this.layer,1))mult = mult.times(10)
         if(hasMilestone(this.layer,2))mult = mult.times(10)
+        if(hasMilestone(this.layer,4))player.b1.mpgain = new Decimal(1)
+        if(hasMilestone(this.layer,4))player.b1.mp = player.b1.mp.add(player.b1.mpgain.div(10))
+        if(hasMilestone(this.layer,4))mult = mult.times(player.b1.mp.root(2))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -142,9 +154,9 @@ addLayer("b1", {
             unlocked(){return hasUpgrade(this.layer,13)},
             name:"<br>thE fIrst chAllEngE",
             challengeDescription:"点^0.5<br>",
-            goalDescription:"1000 点<br>",
+            goalDescription:"10000 点<br>",
             rewardDescription:"点^1.1",
-            canComplete:function(){return player.points.gte(1000)}
+            canComplete:function(){return player.points.gte(10000)}
         }
     },
     milestones: {
@@ -178,11 +190,12 @@ addLayer("b1", {
         },
         4:{
             unlocked(){return hasMilestone("b1",3)},
-            requirementDescription: "4.新的点数[1e6 pts]",
-            effectDescription: "开始生产一种新的点数-milestone pts",
+            requirementDescription: "5.新的点数[1e6 pts]",
+            effectDescription: "开始生产一种新的点数-milestone pts<br>mp加成你的1p",
             done() { return player.b1.points.gte(1e6) && hasUpgrade("b1",14) },
             style() {return {'height':'75px','width':'350px'}}
         },
+        //5:需求1e8
     },
     infoboxes:{
         11:{
@@ -212,7 +225,8 @@ addLayer("b1", {
             ["infobox",11],
             "blank",
             ["column",[["milestone",0],["milestone",1],["milestone",2],
-            ["milestone",3]]],
+            ["milestone",3],["milestone",4]]],
+            ["display-text",function(){return "<br><hr><br>You have " + format(player.b1.mp) + " milestone points<br><br><hr><br>"}]
             ]
         },
     }
