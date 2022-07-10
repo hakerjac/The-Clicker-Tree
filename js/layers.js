@@ -81,7 +81,7 @@ addLayer("c", {
 addLayer("b1", {
     name: "first", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "1", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 100, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
@@ -146,8 +146,8 @@ addLayer("b1", {
         0:{
             requirementDescription: "世纪1：base1的映射",
             effectDescription: "1st pts获取x10",
-            done() { return player.b1.points.gte(10) },
-            style(){}
+            done() { return player.b1.points.gte(10) && hasUpgrade("b1",14) },
+
         }
     
     },
@@ -176,7 +176,7 @@ addLayer("b1", {
 })
 addLayer("a", {
     name: "", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "Ac", // This appears on the layer's node. Default is the id with the first letter capitalized
+    symbol: "Ach", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
@@ -192,7 +192,6 @@ addLayer("a", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() {
         let mult = new Decimal(1)
-        if(hasAchievement("a",11))player.a.achievement = 1
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -206,13 +205,30 @@ addLayer("a", {
             name:"Clicker",
             tooltip:"需求:1 clickers<br>加成:clicker获取x1.1",
             done(){ return player.c.points.gte(1)},
-            
-        }
+        },
+        12:{
+            unlocked(){ return true },
+            name:"Clickers",
+            tooltip:"需求:2 clickers<br>加成:无",
+            done(){ return player.c.points.gte(2)},
+        },
+        13:{
+            unlocked(){ return true },
+            name:"$sudo",
+            tooltip:"需求:c升级21<br>加成:clicker获取x1(",
+            done(){ return hasUpgrade("c",21)},
+        },
+        14:{
+            unlocked(){ return true },
+            name:"新层级！！！<br>1st pts",
+            tooltip:"需求:解锁“1”层级<br>加成:无",
+            done(){ return hasUpgrade("c",23)},
+        },
     },
     tabFormat:[
         ["display-text",function(){ return 'You have ' + format(player.a.achievement) + " achievements"}],
         "blank",
         "blank",
-        ['achievement',11],
+        ["row",[['achievement',11],['achievement',12],['achievement',13],['achievement',14]]],
     ]
 })

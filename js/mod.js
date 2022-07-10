@@ -13,15 +13,22 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.1",
-	name: "The Clicker",
+	num: "0.2.1",
+	name: "The Achivements about Clicker",
 }
 
-let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added 1 layer.<br>
-		- Added 3 upgrades.`
-
+let changelog = `<h1>Changelog:</h1><br><br>
+	<h1>v0.1 Clicker</h1><br>
+		- 增加Clicker层级<br>
+		- 增加3个升级.<br><br>
+	<h3>v0.1.1</h3><br>
+		- 增加First Point层级<br>
+		- 增加C层级3个升级<br><br>
+	<h1>v0.2 First Points</h1><br>
+		- 实装First Points主界面内容<br>
+		- 增加“世纪1”选项卡<br><br>
+	<h3>v0.2.1</h3><br>
+		- 增加关于Clicker层级的成就(4个)<br><br>`
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
