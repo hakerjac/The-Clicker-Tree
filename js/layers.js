@@ -17,6 +17,7 @@ addLayer("c", {
         let mult = new Decimal(1)
         if(hasUpgrade('c', 13))mult = mult.times(upgradeEffect('c', 13))
         if(hasAchievement('a',11))mult = mult.times(1.1)
+        if(hasMilestone("b1",3))mult = mult.times(10)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -95,7 +96,11 @@ addLayer("b1", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() {
         let mult = new Decimal(1)
+        if(hasAchievement("a",21))mult = mult.times(1.1)
+        if(hasAchievement("a",31))mult = mult.times(11)
         if(hasMilestone(this.layer,0))mult = mult.times(10)
+        if(hasMilestone(this.layer,1))mult = mult.times(10)
+        if(hasMilestone(this.layer,2))mult = mult.times(10)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -144,12 +149,48 @@ addLayer("b1", {
     },
     milestones: {
         0:{
-            requirementDescription: "世纪1：base1的映射",
+            unlocked(){return true},
+            requirementDescription: "1.世纪1:base1的映射[10 pts]",
             effectDescription: "1st pts获取x10",
             done() { return player.b1.points.gte(10) && hasUpgrade("b1",14) },
-
+            style() {return {'height':'75px','width':'350px'}}
+        },
+        1:{
+            unlocked(){return hasMilestone("b1",0)},
+            requirementDescription: "2.first pts'小'加成[1000 pts]",
+            effectDescription: "1st pts获取x10",
+            done() { return player.b1.points.gte(1000) && hasUpgrade("b1",14) },
+            style() {return {'height':'75px','width':'350px'}}
+        },
+        2:{
+            unlocked(){return hasMilestone("b1",1)},
+            requirementDescription: "3.first pts加成[10000 pts]",
+            effectDescription: "1st pts获取x10",
+            done() { return player.b1.points.gte(10000) && hasUpgrade("b1",14) },
+            style() {return {'height':'75px','width':'350px'}}
+        },
+        3:{
+            unlocked(){return hasMilestone("b1",2)},
+            requirementDescription: "4.clickers加成[1e5 pts]",
+            effectDescription: "clickers获取x10",
+            done() { return player.b1.points.gte(1e5) && hasUpgrade("b1",14) },
+            style() {return {'height':'75px','width':'350px'}}
+        },
+        4:{
+            unlocked(){return hasMilestone("b1",3)},
+            requirementDescription: "4.新的点数[1e6 pts]",
+            effectDescription: "开始生产一种新的点数-milestone pts",
+            done() { return player.b1.points.gte(1e6) && hasUpgrade("b1",14) },
+            style() {return {'height':'75px','width':'350px'}}
+        },
+    },
+    infoboxes:{
+        11:{
+            title:"世纪1",
+            body:`你找到时空守卫QwQ，花费了3个1st pts让他把你送到了世纪1.<br>
+            这里居然有一些里程碑，你发现有些里程碑可以为你的1st pts带来加成；<br>
+            有些可以链接世纪，让你自由的穿梭在时空碎片间.`
         }
-    
     },
     tabFormat:{
         base1主界面:{
@@ -168,8 +209,10 @@ addLayer("b1", {
         世纪1:{
             unlocked(){return hasUpgrade("b1",14)},
             content:[
+            ["infobox",11],
             "blank",
-            ["milestone",0],
+            ["column",[["milestone",0],["milestone",1],["milestone",2],
+            ["milestone",3]]],
             ]
         },
     }
@@ -181,7 +224,8 @@ addLayer("a", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
-        achievement: new Decimal(0)
+        achievement: new Decimal(0),
+        total: new Decimal(10),
     }},
     color: "#FFF143",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -200,35 +244,102 @@ addLayer("a", {
     row: 'side', // Row the layer is in on the tree (0 is the first row)
     layerShown(){return true},
     achievements:{
+        10:{
+            unlocked(){ return true },
+            name:"Clicker层",
+            tooltip:"介绍",
+            done(){ return false},
+        },
         11:{
             unlocked(){ return true },
             name:"Clicker",
-            tooltip:"需求:1 clickers<br>加成:clicker获取x1.1",
+            tooltip:"需求:1 clicker<br>加成:clicker获取x1.1",
             done(){ return player.c.points.gte(1)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
         12:{
             unlocked(){ return true },
             name:"Clickers",
             tooltip:"需求:2 clickers<br>加成:无",
             done(){ return player.c.points.gte(2)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
         13:{
             unlocked(){ return true },
             name:"$sudo",
             tooltip:"需求:c升级21<br>加成:clicker获取x1(",
             done(){ return hasUpgrade("c",21)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
         14:{
             unlocked(){ return true },
             name:"新层级！！！<br>1st pts",
             tooltip:"需求:解锁“1”层级<br>加成:无",
             done(){ return hasUpgrade("c",23)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
+        20:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"1st Point层<br>   -主层",
+            tooltip:"介绍",
+            done(){ return false},
+        },
+        21:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"First Point",
+            tooltip:"需求:1 1st point<br>加成:1st pts获取x1.1",
+            done(){ return player.b1.points.gte(1)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        22:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"First Pts",
+            tooltip:"需求:2 1st point<br>加成:无",
+            done(){ return player.b1.points.gte(2)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        23:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"挑战？",
+            tooltip:"需求:1升级12<br>加成:无",
+            done(){ return hasUpgrade("b1",12)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        24:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"挑战！！！",
+            tooltip:"需求:完成'thE fIrst chAllEngE'<br>加成:无",
+            done(){ return hasChallenge("b1",11)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        25:{
+            unlocked(){ return hasAchievement("a",14) },
+            name:"新世纪！！！",
+            tooltip:"需求:解锁“世纪1”<br>加成:无",
+            done(){ return hasUpgrade("b1",14)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        30:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"1st Point层<br>  -世纪1",
+            tooltip:"介绍",
+            done(){ return false},
+        },
+        31:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"base1的映射",
+            tooltip:"需求:获得第一个里程碑<br>加成:1st pts获取x11",
+            done(){ return hasMilestone("b1",0)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        }
     },
     tabFormat:[
-        ["display-text",function(){ return 'You have ' + format(player.a.achievement) + " achievements"}],
+        ["display-text",function(){ return 'You have ' + format(player.a.achievement) + "/" + format(player.a.total) + " achievements<hr>"},
+    {"color": "yellow", "font-size": "20px", "font-family": "Comic Sans MS"}],
         "blank",
         "blank",
-        ["row",[['achievement',11],['achievement',12],['achievement',13],['achievement',14]]],
+        ["row",[['achievement',10],['achievement',11],['achievement',12],['achievement',13],['achievement',14]]],
+        ["row",[['achievement',20],['achievement',21],['achievement',22],['achievement',23],['achievement',24],['achievement',25]]],
+        ["row",[['achievement',30],['achievement',31],]]
     ]
 })

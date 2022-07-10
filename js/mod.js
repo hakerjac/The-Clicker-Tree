@@ -13,8 +13,8 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2.1",
-	name: "The Achivements about Clicker",
+	num: "0.2.2",
+	name: "The Achivements about First Point",
 }
 
 let changelog = `<h1>Changelog:</h1><br><br>
@@ -28,8 +28,10 @@ let changelog = `<h1>Changelog:</h1><br><br>
 		- 实装First Points主界面内容<br>
 		- 增加“世纪1”选项卡<br><br>
 	<h3>v0.2.1</h3><br>
-		- 增加关于Clicker层级的成就(4个)<br><br>`
-let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
+		- 增加关于Clicker层级的成就(4个)<br><br>
+	<h3>v0.2.2</h3><br>
+		- 增加关于First Point层级的成就(共10个)<br><br>`
+let winText = `恭喜你！但是你玩这个树纯粹是在浪费时间（<br>因为我做得很垃圾<br>但是谢谢支持！`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -69,7 +71,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.a.achievement.eq(player.a.total)
 }
 
 
