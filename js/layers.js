@@ -57,8 +57,7 @@ addLayer("c", {
         },
         14:{
             unlocked(){return hasUpgrade(this.layer,13)&&(inChallenge("b1",11)||hasChallenge("b1",11))},
-            title:"A big BOOST about challenge",
-            description:"ERROR",
+            fullDisplay(){return "<h2>A big BOOST about challenge</h2>"},
             cost:new Decimal(0),
         },
         21:{
@@ -113,16 +112,20 @@ addLayer("b1", {
         if(hasMilestone(this.layer,4))player.b1.mpgain = new Decimal(1)
         if(hasMilestone(this.layer,4))player.b1.mp = player.b1.mp.add(player.b1.mpgain.div(10))
         if(hasMilestone(this.layer,4))mult = mult.times(player.b1.mp.root(2))
+        if(getBuyableAmount(this.layer,11))mult = mult.times(buyableEffect(this.layer,11))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
+    branches:["c"],
     hotkeys: [
         {key: "1", description: "1: Reset for first pts", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return hasUpgrade("c",23) || player.b1.unlocked},
+    softcap:new Decimal(1e100),
+    softcapPower:0.5,
     upgrades:{
         11:{
             title:"加成.",
@@ -232,6 +235,68 @@ addLayer("b1", {
             你走了进去。`,
         }
     },
+    buyables: {
+        11: {
+            unlocked(){ return true},
+            cost(x) { return new Decimal(2).pow(x).div(buyableEffect("b1",12)).div(buyableEffect("b1",13)) },
+            title:"<h2>小型 倍增器</h2><br><br>",
+            tooltip(){ return "当前效果:<br>" +  "First Point获取x" + format(this.effect())},
+            display() { return "1.5x 1p获取" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(){
+                return new Decimal(1.5).pow(getBuyableAmount(this.layer,this.id)).times(buyableEffect("b1",21))
+            }
+        },
+        12: {
+            unlocked(){ return player.b1.total.gte(1e19)},
+            cost(x) { return new Decimal(1e15).mul(new Decimal(3).pow(x)).div(buyableEffect("b1",13)) },
+            title:"<h2>小型 降价器</h2><br><br>",
+            tooltip(){ return "当前效果:<br>" +  "小型倍增器价格/" + format(this.effect())},
+            display() { return "降低可购买11价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(){
+                return new Decimal(5).pow(getBuyableAmount(this.layer,this.id))
+            }
+        },
+        13: {
+            unlocked(){ return player.b1.total.gte(1e29)},
+            cost(x) { return new Decimal(1e20).mul(new Decimal(1e5).pow(x)) },
+            title:"<h2>小型 降价器^2</h2><br><br>",
+            tooltip(){ return "当前效果:<br>" +  "小型降价器和倍增器价格/" + format(this.effect())},
+            display() { return "降低可购买11&12价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(){
+                return new Decimal(3).pow(getBuyableAmount(this.layer,this.id))
+            }
+        },
+        21: {
+            unlocked(){ return player.b1.total.gte(1e209)},
+            cost(x) { return new Decimal(1e200).mul(new Decimal(10).pow(x)) },
+            title:"<h2>大型 倍增器</h2><br><br>",
+            tooltip(){ return "当前效果:<br>" +  "小型倍增器效果x" + format(this.effect())},
+            display() { return "倍增小型倍增器效果" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(){
+                return new Decimal(5).pow(getBuyableAmount(this.layer,this.id))
+            }
+        },
+    },
     tabFormat:{
         base1主界面:{
             unlocked(){return true},
@@ -250,18 +315,20 @@ addLayer("b1", {
             unlocked(){return hasUpgrade("b1",14)},
             content:[
             ["infobox",1],
+            ["infobox",2],
             "blank",
             ["column",[["milestone",0],["milestone",1],["milestone",2],
             ["milestone",3],["milestone",4],["milestone",5]]],
             ["display-text",function(){return "<br><hr><br>You have " + format(player.b1.mp) + " milestone points<br><br><hr><br>"}],
             ["row",[['upgrade',21]]],
-            ["infobox",2]
             ]
         },
         世纪2:{
             unlocked(){return hasUpgrade("b1",21)},
             content:[
-            ["infobox",3]
+            ["infobox",3],
+            ["row",[["buyable",11],["buyable",12],["buyable",13]]],
+            ["row",[["buyable",21],]]
             ]
         }
     }
@@ -427,3 +494,9 @@ addLayer("a", {
         ["row",[['achievement',40],]],
     ]
 })
+function expRootSoftcap(num,start,power){
+    if(num.lte(start)) return num;
+    num = num.log(10);start = start.log(10)
+    return new Decimal(10).pow(num.root(power).times(start.pow(new Decimal(1).sub(new Decimal(1).div(power)))))
+}
+expRootSoftcap(player.b1.points,1e100,2)
