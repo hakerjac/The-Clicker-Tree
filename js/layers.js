@@ -1,3 +1,8 @@
+function expRootSoftcap(num,start,power){
+    if(num.lte(start)) return num;
+    num = num.log(10);start = start.log(10)
+    return new Decimal(10).pow(num.root(power).times(start.pow(new Decimal(1).sub(new Decimal(1).div(power)))))
+}
 addLayer("c", {
     name: "clicker", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "C", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -118,6 +123,11 @@ addLayer("b1", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
+    getResetGain(){
+        var gain = layers[this.layer].baseAmount().div(layers[this.layer].requires).pow(layers[this.layer].exponent).pow(layers[this.layer].gainExp()).mul(layers[this.layer].gainMult())
+        gain = expRootSoftcap(gain,new Decimal(1e120),1.5)
+        return gain.floor()
+    },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     branches:["c"],
     hotkeys: [
@@ -233,15 +243,21 @@ addLayer("b1", {
             你走了过去，发现门口有个人，你问他，这里是哪儿，你是谁，
             他说：“这里是模组树制作群，我是生草守护者-匿_名”
             你走了进去。`,
+        },
+        4:{
+            unlocked(){return getBuyableAmount("b1",3).eq(1)},
+            title:"Infinity",
+            body:"你到达了无限！！！"
         }
     },
     buyables: {
         11: {
             unlocked(){ return true},
+            purchaseLimit:new Decimal(4000),
             cost(x) { return new Decimal(2).pow(x).div(buyableEffect("b1",12)).div(buyableEffect("b1",13)) },
             title:"<h2>小型 倍增器</h2><br><br>",
             tooltip(){ return "当前效果:<br>" +  "First Point获取x" + format(this.effect())},
-            display() { return "1.5x 1p获取" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            display() { return "1.5x 1p获取" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "/" + format(this.purchaseLimit) + "<br><br>需要：" + format(this.cost()) + " First Points" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -253,10 +269,11 @@ addLayer("b1", {
         },
         12: {
             unlocked(){ return player.b1.total.gte(1e19)},
+            purchaseLimit:new Decimal(1010),
             cost(x) { return new Decimal(1e15).mul(new Decimal(3).pow(x)).div(buyableEffect("b1",13)) },
             title:"<h2>小型 降价器</h2><br><br>",
             tooltip(){ return "当前效果:<br>" +  "小型倍增器价格/" + format(this.effect())},
-            display() { return "降低可购买11价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            display() { return "降低可购买11价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "/" + format(this.purchaseLimit) + "<br><br>需要：" + format(this.cost()) + " First Points" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -268,10 +285,11 @@ addLayer("b1", {
         },
         13: {
             unlocked(){ return player.b1.total.gte(1e29)},
+            purchaseLimit:new Decimal(88),
             cost(x) { return new Decimal(1e20).mul(new Decimal(1e5).pow(x)) },
             title:"<h2>小型 降价器^2</h2><br><br>",
             tooltip(){ return "当前效果:<br>" +  "小型降价器和倍增器价格/" + format(this.effect())},
-            display() { return "降低可购买11&12价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            display() { return "降低可购买11&12价格" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "/" + format(this.purchaseLimit) + "<br><br>需要：" + format(this.cost()) + " First Points" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -283,10 +301,11 @@ addLayer("b1", {
         },
         21: {
             unlocked(){ return player.b1.total.gte(1e209)},
+            purchaseLimit:new Decimal(255),
             cost(x) { return new Decimal(1e200).mul(new Decimal(10).pow(x)) },
             title:"<h2>大型 倍增器</h2><br><br>",
             tooltip(){ return "当前效果:<br>" +  "小型倍增器效果x" + format(this.effect())},
-            display() { return "倍增小型倍增器效果" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要：" + format(this.cost()) + " First Points" },
+            display() { return "倍增小型倍增器效果" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "/" + format(this.purchaseLimit) + "<br><br>需要：" + format(this.cost()) + " First Points" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -294,6 +313,22 @@ addLayer("b1", {
             },
             effect(){
                 return new Decimal(5).pow(getBuyableAmount(this.layer,this.id))
+            }
+        },
+        3: {
+            unlocked(){ return getBuyableAmount("b1",11).eq(4000)&&getBuyableAmount("b1",12).eq(1010)&&getBuyableAmount("b1",13).eq(88)&&getBuyableAmount("b1",21).eq(255)},
+            purchaseLimit:new Decimal(1),
+            cost(x) { return x },
+            title:"<h2>无限 世纪</h2><br><br>",
+            tooltip(){ return "当前效果:<br>" +  "？？？x" + format(this.effect())},
+            display() { return "？？？？？" + "<br><br>数量：" + format(getBuyableAmount(this.layer,this.id)) + "<br><br>需要:1.79e308 First Points" },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(){
+                return new Decimal(1e9999).pow(getBuyableAmount(this.layer,this.id))
             }
         },
     },
@@ -315,12 +350,12 @@ addLayer("b1", {
             unlocked(){return hasUpgrade("b1",14)},
             content:[
             ["infobox",1],
-            ["infobox",2],
             "blank",
             ["column",[["milestone",0],["milestone",1],["milestone",2],
             ["milestone",3],["milestone",4],["milestone",5]]],
             ["display-text",function(){return "<br><hr><br>You have " + format(player.b1.mp) + " milestone points<br><br><hr><br>"}],
             ["row",[['upgrade',21]]],
+            ["infobox",2],
             ]
         },
         世纪2:{
@@ -328,8 +363,13 @@ addLayer("b1", {
             content:[
             ["infobox",3],
             ["row",[["buyable",11],["buyable",12],["buyable",13]]],
-            ["row",[["buyable",21],]]
+            ["row",[["buyable",21]]],
+            ["row",[["buyable",3]]],
+            ["infobox",4]
             ]
+        },
+        Infinity:{
+            unlocked(){return getBuyableAmount("b1",3).eq(1)}
         }
     }
 })
@@ -494,9 +534,5 @@ addLayer("a", {
         ["row",[['achievement',40],]],
     ]
 })
-function expRootSoftcap(num,start,power){
-    if(num.lte(start)) return num;
-    num = num.log(10);start = start.log(10)
-    return new Decimal(10).pow(num.root(power).times(start.pow(new Decimal(1).sub(new Decimal(1).div(power)))))
-}
-expRootSoftcap(player.b1.points,1e100,2)
+
+
