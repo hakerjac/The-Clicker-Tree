@@ -57,7 +57,7 @@ addLayer("c", {
         },
         14:{
             unlocked(){return hasUpgrade(this.layer,13)&&(inChallenge("b1",11)||hasChallenge("b1",11))},
-            title:"A big BOOST in challenge",
+            title:"A big BOOST about challenge",
             description:"ERROR",
             cost:new Decimal(0),
         },
@@ -144,18 +144,23 @@ addLayer("b1", {
         14:{
             unlocked(){return hasUpgrade(this.layer,13)},
             title:"新世纪.",
-            description:"解锁“世纪1”.",
+            description:"解锁“世纪1”！！！<br>里程碑世纪",
             cost:new Decimal(3)
         },
-
+        21:{
+            unlocked(){return hasMilestone(this.layer,5)},
+            title:"新世纪.",
+            description:"解锁“世纪2”！！！<br>可购买世纪",
+            cost:new Decimal(1e8)
+        }
     },
     challenges:{
         11:{
             unlocked(){return hasUpgrade(this.layer,13)},
             name:"<br>thE fIrst chAllEngE",
-            challengeDescription:"点^0.5<br>",
+            challengeDescription:"点^0.5<br>解锁一个升级",
             goalDescription:"10000 点<br>",
-            rewardDescription:"点^1.1",
+            rewardDescription:"点^1.1<br>解锁一个升级",
             canComplete:function(){return player.points.gte(10000)}
         }
     },
@@ -195,14 +200,36 @@ addLayer("b1", {
             done() { return player.b1.points.gte(1e6) && hasUpgrade("b1",14) },
             style() {return {'height':'75px','width':'350px'}}
         },
-        //5:需求1e8
+        5:{
+            unlocked(){return hasMilestone("b1",4)},
+            requirementDescription: "6.新世纪！！！[1e8 pts]",
+            effectDescription: "解锁“世纪2”<br>可购买世纪",
+            done() { return player.b1.points.gte(1e8) && hasUpgrade("b1",14) },
+            style() {return {'height':'75px','width':'350px'}} 
+        }
     },
     infoboxes:{
-        11:{
-            title:"世纪1",
+        1:{
+            title:"世纪1-进入",
             body:`你找到时空守卫QwQ，花费了3个1st pts让他把你送到了世纪1.<br>
             这里居然有一些里程碑，你发现有些里程碑可以为你的1st pts带来加成；<br>
-            有些可以链接世纪，让你自由的穿梭在时空碎片间.`
+            有些可以链接世纪，让你自由的穿梭在时空碎片间。`
+        },
+        2:{
+            unlocked(){return hasUpgrade("b1",21)},
+            title:"世纪1-另一个人",
+            body:`你探索到了世纪1的尽头，你骂道：“这tm也太短了吧！”
+            然后，你就去找时空守卫QwQ，要去世纪2的门票。
+            他说：“1亿 1st pts。”奸商啊！你暗暗的骂了一句，还是老老实实的交钱了，
+            就在他将你送至世纪2的时候，你发现他好像不是QwQ......`
+        },
+        3:{
+            unlocked(){return hasUpgrade("b1",21)},
+            title:"世纪2-居住群落",
+            body:`你进入世纪2，发现你的面前有个人类居住的群落，
+            你走了过去，发现门口有个人，你问他，这里是哪儿，你是谁，
+            他说：“这里是模组树制作群，我是生草守护者-匿_名”
+            你走了进去。`,
         }
     },
     tabFormat:{
@@ -222,24 +249,32 @@ addLayer("b1", {
         世纪1:{
             unlocked(){return hasUpgrade("b1",14)},
             content:[
-            ["infobox",11],
+            ["infobox",1],
             "blank",
             ["column",[["milestone",0],["milestone",1],["milestone",2],
-            ["milestone",3],["milestone",4]]],
-            ["display-text",function(){return "<br><hr><br>You have " + format(player.b1.mp) + " milestone points<br><br><hr><br>"}]
+            ["milestone",3],["milestone",4],["milestone",5]]],
+            ["display-text",function(){return "<br><hr><br>You have " + format(player.b1.mp) + " milestone points<br><br><hr><br>"}],
+            ["row",[['upgrade',21]]],
+            ["infobox",2]
             ]
         },
+        世纪2:{
+            unlocked(){return hasUpgrade("b1",21)},
+            content:[
+            ["infobox",3]
+            ]
+        }
     }
 })
 addLayer("a", {
     name: "", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "Ach", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    symbol: "Ach", // This appears on the layer's node. Default is the id with the first letter capitalinized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts  alphabetical order
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
         achievement: new Decimal(0),
-        total: new Decimal(10),
+        total: new Decimal(14),
     }},
     color: "#FFF143",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -345,7 +380,41 @@ addLayer("a", {
             tooltip:"需求:获得第一个里程碑<br>加成:1st pts获取x11",
             done(){ return hasMilestone("b1",0)},
             onComplete(){player.a.achievement = player.a.achievement.add(1)}
-        }
+        },
+        32:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"'小'加成",
+            tooltip:"需求:获得第二个里程碑<br>加成:无",
+            done(){ return hasMilestone("b1",1)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        33:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"套娃。。。",
+            tooltip:"需求:获得第四个里程碑<br>加成:无",
+            done(){ return hasMilestone("b1",3)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        34:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"里程碑点数？",
+            tooltip:"需求:获得第五个里程碑<br>加成:无",
+            done(){ return hasMilestone("b1",4)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        35:{
+            unlocked(){ return hasAchievement("a",25) },
+            name:"新世纪^2",
+            tooltip:"需求:解锁“世纪2”<br>加成:无",
+            done(){ return hasMilestone("b1",5)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        40:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"1st Point层<br>  -世纪2",
+            tooltip:"介绍",
+            done(){ return false},
+        },
     },
     tabFormat:[
         ["display-text",function(){ return 'You have ' + format(player.a.achievement) + "/" + format(player.a.total) + " achievements<hr>"},
@@ -354,6 +423,7 @@ addLayer("a", {
         "blank",
         ["row",[['achievement',10],['achievement',11],['achievement',12],['achievement',13],['achievement',14]]],
         ["row",[['achievement',20],['achievement',21],['achievement',22],['achievement',23],['achievement',24],['achievement',25]]],
-        ["row",[['achievement',30],['achievement',31],]]
+        ["row",[['achievement',30],['achievement',31],['achievement',32],['achievement',33],['achievement',34],['achievement',35]]],
+        ["row",[['achievement',40],]],
     ]
 })
