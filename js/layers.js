@@ -554,7 +554,8 @@ addLayer("a", {
             unlocked(){ return hasAchievement("a",35) },
             name:"无限！",
             tooltip:"需求:前4个可购买达到极限<br>加成:无",
-            done(){ return player.b1.buyables(3).unlocked},
+            done(){ return getBuyableAmount("b1",11).eq(4000)&&getBuyableAmount("b1",12).eq(1010)
+            &&getBuyableAmount("b1",13).eq(88)&&getBuyableAmount("b1",21).eq(255)},
             onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
     },
