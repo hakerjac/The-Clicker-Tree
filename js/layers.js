@@ -522,6 +522,41 @@ addLayer("a", {
             tooltip:"介绍",
             done(){ return false},
         },
+        41:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"小型 倍增器",
+            tooltip:"需求:购买1000个小型 倍增器<br>加成:无",
+            done(){ return getBuyableAmount("b1",11).gte(1000)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        42:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"简单的打折",
+            tooltip:"需求:购买500个小型 降价器<br>加成:无",
+            done(){ return getBuyableAmount("b1",12).gte(500)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        43:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"更大的打折",
+            tooltip:"需求:购买50个小型 降价器^2<br>加成:无",
+            done(){ return getBuyableAmount("b1",13).gte(50)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        44:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"再次倍增",
+            tooltip:"需求:购买200个大型 倍增器<br>加成:无",
+            done(){ return getBuyableAmount("b1",21).gte(200)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        45:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"无限！",
+            tooltip:"需求:前4个可购买达到极限<br>加成:无",
+            done(){ return player.b1.buyables(3).unlocked},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
     },
     tabFormat:[
         ["display-text",function(){ return 'You have ' + format(player.a.achievement) + "/" + format(player.a.total) + " achievements<hr>"},
