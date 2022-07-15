@@ -381,7 +381,7 @@ addLayer("a", {
         unlocked: true,
 		points: new Decimal(0),
         achievement: new Decimal(0),
-        total: new Decimal(14),
+        total: new Decimal(20),
     }},
     color: "#FFF143",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -552,12 +552,26 @@ addLayer("a", {
         },
         45:{
             unlocked(){ return hasAchievement("a",35) },
-            name:"无限！",
+            name:"达到极限！",
             tooltip:"需求:前4个可购买达到极限<br>加成:无",
             done(){ return getBuyableAmount("b1",11).eq(4000)&&getBuyableAmount("b1",12).eq(1010)
             &&getBuyableAmount("b1",13).eq(88)&&getBuyableAmount("b1",21).eq(255)},
             onComplete(){player.a.achievement = player.a.achievement.add(1)}
         },
+        46:{
+            unlocked(){ return hasAchievement("a",35) },
+            name:"超越极限，达到无限！",
+            tooltip:"需求:购买200个大型 倍增器<br>加成:无",
+            done(){ return getBuyableAmount("b1",21).gte(200)},
+            onComplete(){player.a.achievement = player.a.achievement.add(1)}
+        },
+        50:{
+            unlocked(){ return hasAchievement("a",46) },
+            name:"映射在1st Point层<br>  -Infinity",
+            tooltip:"介绍",
+            done(){ return false},
+        },
+
     },
     tabFormat:[
         ["display-text",function(){ return 'You have ' + format(player.a.achievement) + "/" + format(player.a.total) + " achievements<hr>"},
@@ -567,7 +581,8 @@ addLayer("a", {
         ["row",[['achievement',10],['achievement',11],['achievement',12],['achievement',13],['achievement',14]]],
         ["row",[['achievement',20],['achievement',21],['achievement',22],['achievement',23],['achievement',24],['achievement',25]]],
         ["row",[['achievement',30],['achievement',31],['achievement',32],['achievement',33],['achievement',34],['achievement',35]]],
-        ["row",[['achievement',40],]],
+        ["row",[['achievement',40],['achievement',41],['achievement',42],['achievement',43],['achievement',44],['achievement',45],['achievement',46]]],
+    
     ]
 })
 
